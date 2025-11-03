@@ -4,30 +4,61 @@ import './App.css'
 
 
 export default function App() {
+  const [isRegister, setIsRegister] = useState(false);
 
-  const [isRegister, setIsRegister] = useState(false); 
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [firstName, setFirstName] = useState("");
-  const [lastName, setLastName] = useState("");
+    // Separate state for login
+    const [loginEmail, setLoginEmail] = useState("");
+    const [loginPassword, setLoginPassword] = useState("");
+  
+    // Separate state for register
+    const [firstName, setFirstName] = useState("");
+    const [lastName, setLastName] = useState("");
+    const [registerEmail, setRegisterEmail] = useState("");
+    const [registerPassword, setRegisterPassword] = useState("");
 
   // Handle Login 
   const handleLogin = (e) => {
     e.preventDefault();
-    console.log("Email:", email);
-    console.log("Password:", password);
+    console.log("Email:", loginEmail);
+    console.log("Password:", loginPassword);
+    alert("Login submitted! Check console.");
 
   };
   
   //  Handle Register 
   const handleRegister = (e) => {
     e.preventDefault();
-    console.log("First Name: ", firstName);
-    console.log("Last Name: ", lastName);
-    console.log("Email: ", email);
-    console.log("Password:", password);
-  };
+  
 
+  //  Password validation: min 8 chars, at least 1 capital, 1 number, 1 symbol
+  const passwordRegex =
+      /^(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_\-+=<>?{}[\]~]).{8,}$/;
+
+      if (!passwordRegex.test(registerPassword)) {
+        alert(
+          "Password must be at least 8 characters and include a capital letter, a number, and a symbol."
+        );
+        return;
+      }
+
+      console.log("Register Attempt:");
+      console.log("First Name:", firstName);
+      console.log("Last Name:", lastName);
+      console.log("Email:", registerEmail);
+      console.log("Password:", registerPassword);
+      alert("Account created! Check console.");
+    };
+       // Reset form when toggling
+    const toggleForm = () => {
+      setIsRegister(!isRegister);
+      // Clear all fields when switching
+      setLoginEmail("");
+      setLoginPassword("");
+      setFirstName("");
+      setLastName("");
+      setRegisterEmail("");
+      setRegisterPassword("");
+    };
 
   return (
     <div className="container d-flex align-items-center justify-content-center vh-100">
@@ -72,46 +103,53 @@ export default function App() {
             </>
           )}
 
-          {/* Email input (shared) */}
+          {/* Email input  */}
           <div className="mb-3">
             <label htmlFor="email" className="form-label">
-              Email Address:
+              Email Address
             </label>
             <input
               type="email"
               className="form-control"
               id="email"
               placeholder="Enter email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              value={isRegister ? registerEmail : loginEmail}
+              onChange={(e) =>
+                isRegister
+                  ? setRegisterEmail(e.target.value)
+                  : setLoginEmail(e.target.value)
+              }
               required
             />
           </div>
 
-          {/* Password input (shared) */}
+          {/* Password input */}
           <div className="mb-3">
             <label htmlFor="password" className="form-label">
-              Password:
+              Password
             </label>
             <input
               type="password"
               className="form-control"
               id="password"
               placeholder="Enter password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              value={isRegister ? registerPassword : loginPassword}
+              onChange={(e) =>
+                isRegister
+                  ? setRegisterPassword(e.target.value)
+                  : setLoginPassword(e.target.value)
+              }
               required
             />
           </div>
 
-          {/* Submit button */}
           <div className="d-grid gap-2">
             <button type="submit" className="btn btn-primary">
               {isRegister ? "Create Account" : "Log In"}
             </button>
           </div>
 
-          {/* Forgot password (only visible on login) */}
+          {/* Forgot password link only for login */}
           {!isRegister && (
             <div className="text-center mt-3">
               <a href="#" className="text-decoration-none">
@@ -122,25 +160,15 @@ export default function App() {
 
           <hr />
 
-          {/* Toggle button */}
+          {/* Toggle between forms */}
           <div className="text-center">
-            {isRegister ? (
-              <button
-                type="button"
-                className="btn btn-outline-secondary"
-                onClick={() => setIsRegister(false)}
-              >
-                Back to Login
-              </button>
-            ) : (
-              <button
-                type="button"
-                className="btn btn-outline-secondary"
-                onClick={() => setIsRegister(true)}
-              >
-                Create New Account
-              </button>
-            )}
+            <button
+              type="button"
+              className="btn btn-outline-secondary"
+              onClick={toggleForm}
+            >
+              {isRegister ? "Back to Login" : "Create New Account"}
+            </button>
           </div>
         </form>
       </div>
