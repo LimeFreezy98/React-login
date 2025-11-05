@@ -15,14 +15,24 @@ export default function App() {
     const [lastName, setLastName] = useState("");
     const [registerEmail, setRegisterEmail] = useState("");
     const [registerPassword, setRegisterPassword] = useState("");
+    const [cofirmPassword, setConfirmPassword] = useState("");
+
+    // in memory save account 
+      const [accounts, setAccounts] = useState({});
 
   // Handle Login 
   const handleLogin = (e) => {
     e.preventDefault();
-    console.log("Email:", loginEmail);
-    console.log("Password:", loginPassword);
-    alert("Login submitted! Check console.");
-
+    const account = accounts[loginEmail];
+    if (!account) {
+      alert("No account found with this email!");
+      return;
+    }
+    if (account.password !== loginPassword) {
+      alert("Incorrect password!");
+      return;
+    }
+    alert(`Welcome back, ${account.firstName}!`);
   };
   
   //  Handle Register 
@@ -41,13 +51,37 @@ export default function App() {
         return;
       }
 
+      if (registerPassword !== cofirmPassword) {
+         alert("Passwords do not match!")
+         return;
+      }
+   
+      if (accounts[registerEmail]) {
+        alert("An account with this email already exists!");
+        return;
+      }
+
+
+      setAccounts((prev) => ({
+        ...prev,
+        [registerEmail]: {
+          firstName,
+          lastName,
+          password: registerPassword,
+        },
+      }));
+
       console.log("Register Attempt:");
       console.log("First Name:", firstName);
       console.log("Last Name:", lastName);
       console.log("Email:", registerEmail);
       console.log("Password:", registerPassword);
-      alert("Account created! Check console.");
-    };
+      alert("Account created successfully!");
+    toggleForm(); // switch to login
+  };
+
+  
+
        // Reset form when toggling
     const toggleForm = () => {
       setIsRegister(!isRegister);
@@ -58,6 +92,7 @@ export default function App() {
       setLastName("");
       setRegisterEmail("");
       setRegisterPassword("");
+      setConfirmPassword("")
     };
 
   return (
@@ -142,6 +177,21 @@ export default function App() {
               required
             />
           </div>
+
+           {/* Confirm password (register only) */}
+           {isRegister && (
+            <div className="mb-3">
+              <label className="form-label">Confirm Password</label>
+              <input
+                type="password"
+                className="form-control"
+                placeholder="Enter Confirm Password"
+                value={cofirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                required
+              />
+            </div>
+          )}
 
           <div className="d-grid gap-2">
             <button type="submit" className="btn btn-primary">
